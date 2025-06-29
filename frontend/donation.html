@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Donation with Viber Contact</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #0f172a, #1e3a8a);
+            color: #f1f5f9;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 800px;
+            width: 100%;
+            background: rgba(15, 23, 42, 0.8);
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            text-align: center;
+        }
+        
+        header {
+            margin-bottom: 30px;
+            text-align: center;
+        }
+        
+        h1 {
+            font-size: 2.8rem;
+            margin-bottom: 15px;
+            color: #60a5fa;
+            text-shadow: 0 2px 10px rgba(96, 165, 250, 0.4);
+        }
+        
+        .logo {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 25px;
+        }
+        
+        .logo i {
+            font-size: 4rem;
+            color: #60a5fa;
+            background: rgba(96, 165, 250, 0.1);
+            width: 100px;
+            height: 100px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            margin-bottom: 20px;
+        }
+        
+        .subtitle {
+            font-size: 1.2rem;
+            max-width: 600px;
+            margin: 0 auto 30px;
+            color: #cbd5e1;
+            line-height: 1.6;
+        }
+        
+        .donate-section {
+            background: rgba(30, 58, 138, 0.3);
+            border-radius: 15px;
+            padding: 30px;
+            margin: 30px 0;
+            border: 1px solid rgba(96, 165, 250, 0.3);
+        }
+        
+        .donate-section h2 {
+            font-size: 1.8rem;
+            margin-bottom: 25px;
+            color: #93c5fd;
+        }
+        
+        .donate-button {
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            background: linear-gradient(to right, #3b82f6, #6366f1);
+            color: white;
+            padding: 18px 42px;
+            font-size: 1.3rem;
+            font-weight: 600;
+            border-radius: 50px;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            box-shadow: 0 6px 20px rgba(59, 130, 246, 0.4);
+            border: none;
+            cursor: pointer;
+            margin: 20px 0;
+        }
+        
+        .donate-button:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(59, 130, 246, 0.6);
+            background: linear-gradient(to right, #2563eb, #4f46e5);
+        }
+        
+        /* Popup Styles */
+        .popup-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+        
+        .popup-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        .popup-content {
+            background: linear-gradient(to bottom right, #0f172a, #1e3a8a);
+            border-radius: 20px;
+            width: 90%;
+            max-width: 500px;
+            padding: 40px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+            position: relative;
+            transform: translateY(50px);
+            transition: transform 0.4s ease;
+            border: 1px solid rgba(96, 165, 250, 0.3);
+        }
+        
+        .popup-overlay.active .popup-content {
+            transform: translateY(0);
+        }
+        
+        .popup-close {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #93c5fd;
+            font-size: 1.5rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .popup-close:hover {
+            background: rgba(239, 68, 68, 0.3);
+            color: #f87171;
+        }
+        
+        .popup-content h3 {
+            font-size: 1.8rem;
+            margin-bottom: 25px;
+            color: #60a5fa;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+        }
+        
+        .popup-message {
+            background: rgba(30, 58, 138, 0.3);
+            padding: 25px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            text-align: left;
+            border: 1px solid rgba(96, 165, 250, 0.2);
+        }
+        
+        .popup-message p {
+            margin-bottom: 20px;
+            line-height: 1.7;
+            font-size: 1.1rem;
+        }
+        
+        .viber-contact {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            background: rgba(123, 97, 255, 0.2);
+            padding: 20px;
+            border-radius: 15px;
+            margin-top: 25px;
+            border: 1px solid rgba(123, 97, 255, 0.3);
+        }
+        
+        .viber-icon {
+            font-size: 2.5rem;
+            color: #7b61ff;
+        }
+        
+        .viber-details {
+            text-align: left;
+        }
+        
+        .viber-details strong {
+            display: block;
+            font-size: 1.2rem;
+            color: #a5b4fc;
+            margin-bottom: 5px;
+        }
+        
+        .phone-number {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: white;
+            letter-spacing: 1px;
+        }
+        
+        .action-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 30px;
+        }
+        
+        .action-btn {
+            flex: 1;
+            padding: 15px;
+            border-radius: 12px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+        
+        .copy-btn {
+            background: rgba(59, 130, 246, 0.2);
+            color: #93c5fd;
+        }
+        
+        .copy-btn:hover {
+            background: rgba(59, 130, 246, 0.3);
+            border-color: #3b82f6;
+        }
+        
+        .viber-btn {
+            background: rgba(123, 97, 255, 0.2);
+            color: #a78bfa;
+        }
+        
+        .viber-btn:hover {
+            background: rgba(123, 97, 255, 0.3);
+            border-color: #7b61ff;
+        }
+        
+        footer {
+            margin-top: 40px;
+            color: #94a3b8;
+            font-size: 0.9rem;
+            text-align: center;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: rgba(16, 185, 129, 0.9);
+            color: white;
+            padding: 15px 25px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            transform: translateX(200%);
+            transition: transform 0.4s ease;
+            z-index: 2000;
+        }
+        
+        .notification.show {
+            transform: translateX(0);
+        }
+        
+        @media (max-width: 600px) {
+            .container {
+                padding: 25px;
+            }
+            
+            h1 {
+                font-size: 2.2rem;
+            }
+            
+            .donate-button {
+                padding: 16px 32px;
+                font-size: 1.2rem;
+            }
+            
+            .action-buttons {
+                flex-direction: column;
+            }
+            
+            .phone-number {
+                font-size: 1.3rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="logo">
+                <i class="fas fa-donate"></i>
+            </div>
+            <h1>Support Our Project</h1>
+            <p class="subtitle">Your contributions help us continue developing and improving our services. We appreciate any support you can provide!</p>
+        </header>
+        
+        <div class="donate-section">
+            <h2>Make a Donation</h2>
+            <p>Click the button below to support our project with a donation</p>
+            <button class="donate-button" id="donateButton">
+                <i class="fas fa-donate"></i> Make a Donation
+            </button>
+        </div>
+        
+        <div class="additional-info">
+            <p><i class="fas fa-info-circle"></i> All donations are optional and greatly appreciated. Thank you for your support!</p>
+        </div>
+        
+        <footer>
+            <p>© 2023 Project Support | Contact for more information</p>
+        </footer>
+    </div>
+    
+    <!-- Popup Overlay -->
+    <div class="popup-overlay" id="popupOverlay">
+        <div class="popup-content">
+            <div class="popup-close" id="popupClose">
+                <i class="fas fa-times"></i>
+            </div>
+            <h3><i class="fas fa-info-circle"></i> Important Information</h3>
+            
+            <div class="popup-message">
+                <p>Thank you for considering a donation to support our project!</p>
+                <p>You can send optional thanks via Postnet or contact me directly only via Viber.</p>
+                <p>Please note that donations are completely optional and not required for any services.</p>
+            </div>
+            
+            <div class="viber-contact">
+                <i class="fab fa-viber viber-icon"></i>
+                <div class="viber-details">
+                    <strong>Contact me on Viber:</strong>
+                    <div class="phone-number">+381 66 537 3677</div>
+                </div>
+            </div>
+            
+            <div class="action-buttons">
+                <div class="action-btn copy-btn" id="copyButton">
+                    <i class="fas fa-copy"></i> Copy Number
+                </div>
+                <div class="action-btn viber-btn" id="viberButton">
+                    <i class="fab fa-viber"></i> Open Viber
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Notification -->
+    <div class="notification" id="notification">
+        Phone number copied to clipboard!
+    </div>
+    
+    <script>
+        // Get DOM elements
+        const donateButton = document.getElementById('donateButton');
+        const popupOverlay = document.getElementById('popupOverlay');
+        const popupClose = document.getElementById('popupClose');
+        const copyButton = document.getElementById('copyButton');
+        const viberButton = document.getElementById('viberButton');
+        const notification = document.getElementById('notification');
+        
+        // Open popup when donate button is clicked
+        donateButton.addEventListener('click', () => {
+            popupOverlay.classList.add('active');
+        });
+        
+        // Close popup when close button is clicked
+        popupClose.addEventListener('click', () => {
+            popupOverlay.classList.remove('active');
+        });
+        
+        // Close popup when clicking outside the content
+        popupOverlay.addEventListener('click', (e) => {
+            if (e.target === popupOverlay) {
+                popupOverlay.classList.remove('active');
+            }
+        });
+        
+        // Copy phone number to clipboard
+        copyButton.addEventListener('click', () => {
+            const phoneNumber = '+381665373677';
+            navigator.clipboard.writeText(phoneNumber)
+                .then(() => {
+                    // Show notification
+                    notification.classList.add('show');
+                    
+                    // Hide notification after 3 seconds
+                    setTimeout(() => {
+                        notification.classList.remove('show');
+                    }, 3000);
+                })
+                .catch(err => {
+                    console.error('Failed to copy: ', err);
+                });
+        });
+        
+        // Open Viber (if installed)
+        viberButton.addEventListener('click', () => {
+            const phoneNumber = '+381665373677';
+            window.open(`viber://add?number=${encodeURIComponent(phoneNumber)}`, '_blank');
+        });
+        
+        // Close popup when pressing Escape key
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && popupOverlay.classList.contains('active')) {
+                popupOverlay.classList.remove('active');
+            }
+        });
+    </script>
+</body>
+</html>
