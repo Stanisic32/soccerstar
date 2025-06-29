@@ -1,0 +1,681 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Soccer Predictions</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        :root {
+            --primary: #1e3a8a;
+            --secondary: #0f172a;
+            --accent: #3b82f6;
+            --light: #f8fafc;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --card-bg: #ffffff;
+            --shadow: rgba(0, 0, 0, 0.1);
+        }
+        
+        body {
+            background: linear-gradient(135deg, #0f172a, #1e3a8a);
+            color: #333;
+            line-height: 1.6;
+            min-height: 100vh;
+            padding-bottom: 60px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        header {
+            background: var(--secondary);
+            color: white;
+            padding: 20px 0;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .logo i {
+            font-size: 2.5rem;
+            color: var(--accent);
+        }
+        
+        .logo h1 {
+            font-size: 1.8rem;
+            font-weight: 700;
+        }
+        
+        .logo span {
+            color: var(--accent);
+        }
+        
+        .disclaimer-banner {
+            background: var(--danger);
+            color: white;
+            text-align: center;
+            padding: 15px;
+            font-weight: 600;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        .hero {
+            text-align: center;
+            padding: 50px 20px;
+            color: white;
+            background: linear-gradient(rgba(15, 23, 42, 0.8), rgba(15, 23, 42, 0.9)), url('https://images.unsplash.com/photo-1575361204480-aadea25e6e68?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1471&q=80');
+            background-size: cover;
+            background-position: center;
+            border-radius: 15px;
+            margin: 30px 0;
+        }
+        
+        .hero h2 {
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+        }
+        
+        .hero p {
+            font-size: 1.2rem;
+            max-width: 700px;
+            margin: 0 auto 25px;
+        }
+        
+        .countdown {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 20px;
+            border-radius: 10px;
+            max-width: 500px;
+            margin: 20px auto;
+            backdrop-filter: blur(10px);
+        }
+        
+        .countdown-title {
+            font-size: 1.2rem;
+            margin-bottom: 15px;
+        }
+        
+        .countdown-timer {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+        }
+        
+        .countdown-item {
+            background: var(--secondary);
+            padding: 10px 15px;
+            border-radius: 8px;
+            min-width: 70px;
+            text-align: center;
+        }
+        
+        .countdown-number {
+            font-size: 1.8rem;
+            font-weight: 700;
+        }
+        
+        .countdown-label {
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+        
+        .section-title {
+            text-align: center;
+            color: white;
+            margin: 40px 0 30px;
+            position: relative;
+        }
+        
+        .section-title:after {
+            content: '';
+            display: block;
+            width: 80px;
+            height: 4px;
+            background: var(--accent);
+            margin: 10px auto;
+            border-radius: 2px;
+        }
+        
+        .predictions-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+            margin-bottom: 40px;
+        }
+        
+        .prediction-card {
+            background: var(--card-bg);
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 10px 20px var(--shadow);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .prediction-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
+        }
+        
+        .card-header {
+            background: var(--primary);
+            color: white;
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .league {
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+        
+        .match-date {
+            font-size: 0.9rem;
+        }
+        
+        .match-teams {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 25px 15px;
+            gap: 20px;
+        }
+        
+        .team {
+            text-align: center;
+            flex: 1;
+        }
+        
+        .team-logo {
+            width: 70px;
+            height: 70px;
+            margin: 0 auto 15px;
+            background: #f1f5f9;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            color: var(--primary);
+        }
+        
+        .team-name {
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+        
+        .vs {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+        
+        .prediction-details {
+            padding: 20px;
+            border-top: 1px solid #e2e8f0;
+        }
+        
+        .prediction-title {
+            text-align: center;
+            font-weight: 700;
+            margin-bottom: 15px;
+            color: var(--secondary);
+        }
+        
+        .prediction-outcome {
+            background: #eff6ff;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            text-align: center;
+            font-weight: 600;
+            color: var(--primary);
+            border-left: 4px solid var(--accent);
+        }
+        
+        .confidence {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .confidence-label {
+            width: 120px;
+            font-weight: 600;
+        }
+        
+        .confidence-bar {
+            flex: 1;
+            height: 10px;
+            background: #e2e8f0;
+            border-radius: 5px;
+            overflow: hidden;
+        }
+        
+        .confidence-level {
+            height: 100%;
+            background: var(--success);
+            border-radius: 5px;
+        }
+        
+        .confidence-value {
+            margin-left: 10px;
+            font-weight: 600;
+        }
+        
+        .key-stats {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+        
+        .stat {
+            text-align: center;
+            flex: 1;
+        }
+        
+        .stat-value {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+        
+        .stat-label {
+            font-size: 0.85rem;
+            opacity: 0.8;
+        }
+        
+        .disclaimer {
+            background: var(--card-bg);
+            border-radius: 15px;
+            padding: 30px;
+            margin-top: 40px;
+            box-shadow: 0 10px 20px var(--shadow);
+            border-left: 5px solid var(--danger);
+        }
+        
+        .disclaimer h3 {
+            color: var(--danger);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .donation {
+            background: var(--card-bg);
+            border-radius: 15px;
+            padding: 30px;
+            margin-top: 40px;
+            text-align: center;
+            box-shadow: 0 10px 20px var(--shadow);
+        }
+        
+        .donation h3 {
+            color: var(--primary);
+            margin-bottom: 20px;
+        }
+        
+        .donation p {
+            margin-bottom: 25px;
+            color: #4b5563;
+        }
+        
+        .donate-button {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            background: #f59e0b;
+            color: white;
+            padding: 15px 30px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            border-radius: 50px;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        .donate-button:hover {
+            background: #d97706;
+            transform: translateY(-3px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+        }
+        
+        footer {
+            background: var(--secondary);
+            color: white;
+            text-align: center;
+            padding: 30px 0;
+            margin-top: 60px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        @media (max-width: 768px) {
+            .hero h2 {
+                font-size: 2rem;
+            }
+            
+            .header-content {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            .countdown-timer {
+                flex-wrap: wrap;
+            }
+            
+            .match-teams {
+                flex-direction: column;
+                gap: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">
+                    <i class="fas fa-futbol"></i>
+                    <h1>AI <span>Soccer</span> Predictions</h1>
+                </div>
+                <div class="last-updated">
+                    <p>Updated: <span id="current-date"></span></p>
+                </div>
+            </div>
+        </div>
+    </header>
+    
+    <div class="disclaimer-banner">
+        <i class="fas fa-exclamation-triangle"></i> IMPORTANT: These predictions are AI-generated for informational purposes only. Gambling involves risk.
+    </div>
+    
+    <div class="container">
+        <section class="hero">
+            <h2>AI-Powered Soccer Match Predictions</h2>
+            <p>Our advanced AI analyzes team performance, player stats, and historical data to generate match predictions. Always remember that sports outcomes are unpredictable.</p>
+            
+            <div class="countdown">
+                <div class="countdown-title">Next Predictions Update In:</div>
+                <div class="countdown-timer">
+                    <div class="countdown-item">
+                        <div class="countdown-number" id="hours">12</div>
+                        <div class="countdown-label">HOURS</div>
+                    </div>
+                    <div class="countdown-item">
+                        <div class="countdown-number" id="minutes">45</div>
+                        <div class="countdown-label">MINUTES</div>
+                    </div>
+                    <div class="countdown-item">
+                        <div class="countdown-number" id="seconds">30</div>
+                        <div class="countdown-label">SECONDS</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <h2 class="section-title">Today's Top Predictions</h2>
+        
+        <div class="predictions-container">
+            <!-- Prediction 1 -->
+            <div class="prediction-card">
+                <div class="card-header">
+                    <div class="league">Premier League</div>
+                    <div class="match-date">June 30, 2023 | 20:00 GMT</div>
+                </div>
+                
+                <div class="match-teams">
+                    <div class="team">
+                        <div class="team-logo">MCI</div>
+                        <div class="team-name">Manchester City</div>
+                    </div>
+                    
+                    <div class="vs">VS</div>
+                    
+                    <div class="team">
+                        <div class="team-logo">LIV</div>
+                        <div class="team-name">Liverpool</div>
+                    </div>
+                </div>
+                
+                <div class="prediction-details">
+                    <div class="prediction-title">AI Prediction</div>
+                    <div class="prediction-outcome">Manchester City to Win</div>
+                    
+                    <div class="confidence">
+                        <div class="confidence-label">Confidence:</div>
+                        <div class="confidence-bar">
+                            <div class="confidence-level" style="width: 78%"></div>
+                        </div>
+                        <div class="confidence-value">78%</div>
+                    </div>
+                    
+                    <div class="key-stats">
+                        <div class="stat">
+                            <div class="stat-value">2.4</div>
+                            <div class="stat-label">Avg Goals</div>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-value">63%</div>
+                            <div class="stat-label">Possession</div>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-value">5-2-3</div>
+                            <div class="stat-label">Last 10</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Prediction 2 -->
+            <div class="prediction-card">
+                <div class="card-header">
+                    <div class="league">La Liga</div>
+                    <div class="match-date">June 30, 2023 | 19:45 GMT</div>
+                </div>
+                
+                <div class="match-teams">
+                    <div class="team">
+                        <div class="team-logo">RMA</div>
+                        <div class="team-name">Real Madrid</div>
+                    </div>
+                    
+                    <div class="vs">VS</div>
+                    
+                    <div class="team">
+                        <div class="team-logo">FCB</div>
+                        <div class="team-name">Barcelona</div>
+                    </div>
+                </div>
+                
+                <div class="prediction-details">
+                    <div class="prediction-title">AI Prediction</div>
+                    <div class="prediction-outcome">Draw</div>
+                    
+                    <div class="confidence">
+                        <div class="confidence-label">Confidence:</div>
+                        <div class="confidence-bar">
+                            <div class="confidence-level" style="width: 65%"></div>
+                        </div>
+                        <div class="confidence-value">65%</div>
+                    </div>
+                    
+                    <div class="key-stats">
+                        <div class="stat">
+                            <div class="stat-value">3.1</div>
+                            <div class="stat-label">Avg Goals</div>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-value">55%</div>
+                            <div class="stat-label">Possession</div>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-value">6-3-1</div>
+                            <div class="stat-label">Last 10</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Prediction 3 -->
+            <div class="prediction-card">
+                <div class="card-header">
+                    <div class="league">Serie A</div>
+                    <div class="match-date">June 30, 2023 | 18:30 GMT</div>
+                </div>
+                
+                <div class="match-teams">
+                    <div class="team">
+                        <div class="team-logo">INT</div>
+                        <div class="team-name">Inter Milan</div>
+                    </div>
+                    
+                    <div class="vs">VS</div>
+                    
+                    <div class="team">
+                        <div class="team-logo">JUV</div>
+                        <div class="team-name">Juventus</div>
+                    </div>
+                </div>
+                
+                <div class="prediction-details">
+                    <div class="prediction-title">AI Prediction</div>
+                    <div class="prediction-outcome">Under 2.5 Goals</div>
+                    
+                    <div class="confidence">
+                        <div class="confidence-label">Confidence:</div>
+                        <div class="confidence-bar">
+                            <div class="confidence-level" style="width: 82%"></div>
+                        </div>
+                        <div class="confidence-value">82%</div>
+                    </div>
+                    
+                    <div class="key-stats">
+                        <div class="stat">
+                            <div class="stat-value">1.9</div>
+                            <div class="stat-label">Avg Goals</div>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-value">47%</div>
+                            <div class="stat-label">Possession</div>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-value">7-2-1</div>
+                            <div class="stat-label">Last 10</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="disclaimer">
+            <h3><i class="fas fa-exclamation-circle"></i> Important Disclaimer</h3>
+            <p>These predictions are generated by artificial intelligence algorithms based on statistical analysis of historical data, team performance, and player statistics. They are provided for informational and entertainment purposes only.</p>
+            <p>Sports outcomes are inherently unpredictable and can be affected by numerous factors beyond the scope of our AI analysis. These predictions should not be interpreted as financial advice or encouragement to gamble.</p>
+            <p>If you choose to engage in sports betting, please remember:</p>
+            <ul style="margin: 15px 0 15px 30px;">
+                <li>Gambling involves significant financial risk</li>
+                <li>Only gamble with money you can afford to lose</li>
+                <li>Set strict limits for yourself before gambling</li>
+                <li>Seek help if gambling becomes a problem</li>
+            </ul>
+            <p>By using these predictions, you acknowledge that you are solely responsible for any decisions you make based on this information.</p>
+        </div>
+        
+        <div class="donation">
+            <h3>Support Our Free Service</h3>
+            <p>If you find our AI predictions valuable, consider supporting us with a donation. This helps us maintain and improve our prediction algorithms.</p>
+            <a href="#" class="donate-button">
+                <i class="fas fa-donate"></i> Make a Donation
+            </a>
+        </div>
+    </div>
+    
+    <footer>
+        <div class="container">
+            <p>© 2023 AI Soccer Predictions. All rights reserved.</p>
+            <p>This is a demonstration website. All predictions are simulated.</p>
+        </div>
+    </footer>
+
+    <script>
+        // Set current date
+        const now = new Date();
+        const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+        document.getElementById('current-date').textContent = now.toLocaleDateString('en-US', options);
+        
+        // Countdown timer
+        function updateCountdown() {
+            const hoursElement = document.getElementById('hours');
+            const minutesElement = document.getElementById('minutes');
+            const secondsElement = document.getElementById('seconds');
+            
+            let hours = parseInt(hoursElement.textContent);
+            let minutes = parseInt(minutesElement.textContent);
+            let seconds = parseInt(secondsElement.textContent);
+            
+            seconds--;
+            
+            if (seconds < 0) {
+                seconds = 59;
+                minutes--;
+                
+                if (minutes < 0) {
+                    minutes = 59;
+                    hours--;
+                    
+                    if (hours < 0) {
+                        hours = 23;
+                    }
+                }
+            }
+            
+            hoursElement.textContent = hours.toString().padStart(2, '0');
+            minutesElement.textContent = minutes.toString().padStart(2, '0');
+            secondsElement.textContent = seconds.toString().padStart(2, '0');
+        }
+        
+        setInterval(updateCountdown, 1000);
+        
+        // Add subtle animation to cards on load
+        document.addEventListener('DOMContentLoaded', function() {
+            const cards = document.querySelectorAll('.prediction-card');
+            cards.forEach((card, index) => {
+                setTimeout(() => {
+                    card.style.opacity = '1';
+                    card.style.transform = 'translateY(0)';
+                }, 300 * index);
+            });
+        });
+    </script>
+</body>
+</html>
